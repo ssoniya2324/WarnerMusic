@@ -5,7 +5,6 @@ app.use(express.json());
 
 const port = 3002;
 
-
 const connectionOptions = {
     account: 'deb05201.us-east-1',
     username: 'sebastian',
