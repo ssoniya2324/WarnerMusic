@@ -1,4 +1,6 @@
 export * from "./DataTable";
 export * from "./DropdownSelect";
-export * from "./HeaderTabs";
+export * from "./MUITable"
+export * from "./CommonDataTable"
+
 

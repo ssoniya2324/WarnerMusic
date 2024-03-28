@@ -1,13 +1,13 @@
 // useSingerData.ts
 import { useState, useEffect } from 'react';
-import { fetchSingerData } from '../Api';
+import { fetchSingerBaseData, fetchSingerData } from '../Api';
 
 export interface SingerData {
   CC_CALL_CENTER_ID: string;
   CC_NAME: string;
 }
 
-const useSingerData = (trigger: boolean) => {
+const useSingerData = (trigger: boolean, viewType:string) => {
   const [data, setData] = useState<SingerData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -17,7 +17,8 @@ const useSingerData = (trigger: boolean) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const responseData = await fetchSingerData();
+
+        const responseData = (viewType =='validate')? await fetchSingerData():await fetchSingerBaseData();
         setData(responseData);
         setLoading(false);
       } catch (error) {

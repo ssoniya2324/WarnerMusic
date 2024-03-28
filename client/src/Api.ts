@@ -47,3 +47,33 @@ export const fetchLanguageData = async () => {
     throw new Error('Failed to fetch language data');
   }
 };
+
+
+export const fetchSingerBaseData = async () => {
+  try {
+    const response = await api.get('/singerBase');
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch singer data');
+  }
+};
+
+
+export const fetchRegionBaseData = async () => {
+  try {
+    const response = await api.get('/regionBase');
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch region data');
+  }
+};
+
+
+export const fetchLanguageBaseData = async () => {
+  try {
+    const response = await api.get('/languageBase');
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch language data');
+  }
+};

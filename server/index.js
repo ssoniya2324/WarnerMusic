@@ -6,12 +6,13 @@ app.use(cors());
 const port = 3002;
 
 const connectionOptions = {
-    account: 'deb05201.us-east-1',
-    username: 'sebastian',
-    password: 'Sebastian@02',
-    warehouse: 'COMPUTE_WH',
-    database: 'SNOWFLAKE_SAMPLE_DATA',
-    schema: 'TPCDS_SF100TCL'
+    account: 'XBA65735',
+  username: 'Soniya_S',
+  password: 'hasrjas@Gen3',
+  role: 'GENAAI',
+  warehouse: 'GENAI_POC',
+  database: 'BET_POC',
+  schema: 'WMG'
 };
 
 // Create the Snowflake connection
@@ -26,9 +27,9 @@ connection.connect((err, conn) => {
     console.log('Connected to Snowflake!');
 });
 
-// singer API
+// Validate Singer  API
 app.get('/singer', (request, response) => {
-    const sqlQuery = 'select cc_call_center_id, cc_name from SNOWFLAKE_SAMPLE_DATA.TPCDS_SF100TCL.CALL_CENTER limit 10';
+    const sqlQuery = "select  album,singer,predicted_singer,singer_status from bet_poc.wmg.music_result where singer_Status = 'False'";
     connection.execute({
         sqlText: sqlQuery,
         complete: (err, stmt, rows) => {
@@ -38,14 +39,15 @@ app.get('/singer', (request, response) => {
                 return;
             }
             console.log('Query executed successfully');
-            response.json(rows);
+            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
         }
     });
 });
 
-// Region API
+// Validate Region API
 app.get('/region', (request, response) => {
-    const sqlQuery = 'select cc_call_center_id, cc_name from SNOWFLAKE_SAMPLE_DATA.TPCDS_SF100TCL.CALL_CENTER limit 10';
+    const sqlQuery = "select album,singer,region, predicted_region,region_status from bet_poc.wmg.music_result where region_status = 'False'";
     connection.execute({
         sqlText: sqlQuery,
         complete: (err, stmt, rows) => {
@@ -55,14 +57,17 @@ app.get('/region', (request, response) => {
                 return;
             }
             console.log('Query executed successfully');
-            response.json(rows);
+            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
         }
     });
 });
 
-// Region API
+// Validate Region API
 app.get('/language', (request, response) => {
-    const sqlQuery = 'select cc_call_center_id, cc_name from SNOWFLAKE_SAMPLE_DATA.TPCDS_SF100TCL.CALL_CENTER limit 15';
+    
+    const sqlQuery = "select album,singer,language, predicted_language,language_status from bet_poc.wmg.music_result where language_status = 'False'";
+    
     connection.execute({
         sqlText: sqlQuery,
         complete: (err, stmt, rows) => {
@@ -72,7 +77,64 @@ app.get('/language', (request, response) => {
                 return;
             }
             console.log('Query executed successfully');
-            response.json(rows);
+            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
+        }
+    });
+});
+
+//Base singer API
+app.get('/singerBase', (request, response) => {
+    const sqlQuery = "select album, singer from bet_poc.wmg.music";
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
+        }
+    });
+});
+
+// Base Region API
+app.get('/regionBase', (request, response) => {
+    const sqlQuery = "select album, region from bet_poc.wmg.music";
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
+        }
+    });
+});
+
+//Base Language API
+app.get('/languageBase', (request, response) => {
+    
+    const sqlQuery = "select album, language from bet_poc.wmg.music";
+    
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
         }
     });
 });

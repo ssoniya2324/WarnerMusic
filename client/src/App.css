@@ -1,6 +1,21 @@
 body {
   font-family: 'Roboto', sans-serif;
   font-weight: 100;
-  background-color: rgb(237 237 237);
+  background-color:rgb(227 236 255);
 }
 .MuiDataGrid-cell, .MuiDataGrid-row{min-height: 45px!important}
+
+body:before {
+  background: #2573ff;
+  width: 100%;
+  content: '';
+  height: 300px;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+  top: 0px;
+  left: 0px;
+}
+th.MuiTableCell-root {
+  font-weight: bold;
+}
