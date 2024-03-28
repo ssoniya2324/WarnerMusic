@@ -32,7 +32,7 @@ declare module "@mui/material/styles" {
 }
 
 // colors
-const PRIMARY = "#171A1B";
+const PRIMARY = "#2573ff";
 const PRIMARY_GREY = "#454E53";
 const SECONDARY_GREY = "#ACB5B9";
 const SECONDARY = "#2066DF";
@@ -224,6 +224,14 @@ export const AppTheme = createTheme({
       },
     },
    
+    MuiToolbar:{
+      styleOverrides:{
+        root:{
+          // background:'rgb(255 235 59 / 28%)'
+
+        }
+      }
+    }
     
   },
 });

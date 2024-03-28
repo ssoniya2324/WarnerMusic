@@ -1,11 +1,12 @@
+// App.js
 import * as React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/Home'
 import { ThemeProvider } from "@emotion/react";
 import { AppTheme } from "./styles";
 import './App.css'
-function App() {
 
+function App() {
   const router = createBrowserRouter([
     {
       path: '/',
@@ -16,7 +17,7 @@ function App() {
   return (
     <div className="App">
       <ThemeProvider theme={AppTheme}>
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
       </ThemeProvider>
     </div>
   );
