@@ -1,13 +1,13 @@
 // App.js
 import * as React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from './pages/Home'
+import { createHashRouter, RouterProvider } from 'react-router-dom'; // Import createHashRouter instead of createBrowserRouter
+import Home from './pages/Home';
 import { ThemeProvider } from "@emotion/react";
 import { AppTheme } from "./styles";
-import './App.css'
+import './App.css';
 
 function App() {
-  const router = createBrowserRouter([
+  const router = createHashRouter([ // Use createHashRouter
     {
       path: '/',
       element: <Home />,
