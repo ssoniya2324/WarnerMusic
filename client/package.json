@@ -46,6 +46,9 @@
       "last 1 safari version"
     ]
   },
+  
+  "homepage": "https://sonisoniya.github.io/WarnerMusic/",
+
   "proxy": "http://localhost:3001",
   "devDependencies": {
     "gh-pages": "^6.1.1"
