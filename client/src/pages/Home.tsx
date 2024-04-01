@@ -28,7 +28,7 @@ const Home: React.FC = () => {
 
   const [baseTrigger, setBaseTrigger] = React.useState(false);
 
-  const { data: singerData, loading: singerLoading, error: singerError } = useSingerData(singerTrigger, viewType,undefined);
+  const { data: singerData, loading: singerLoading, error: singerError } = useSingerData(singerTrigger, viewType, undefined);
   const { data: regionData, loading: regionLoading, error: regionError } = useRegionData(regionTrigger, viewType);
   const { data: languageData, loading: languageLoading, error: languageError } = useLanguageData(languageTrigger, viewType);
 
@@ -79,7 +79,7 @@ const Home: React.FC = () => {
 
 
   useEffect(() => {
-    if(viewType == 'validate'){
+    if (viewType == 'validate') {
       setShowTabs(false); // Reset showTabs state whenever selectedColumnValues change
     }
   }, [selectedColumnValues]);
@@ -106,12 +106,12 @@ const Home: React.FC = () => {
     setViewType('view');
     setShowTabs(true);
     // Set the first tab active based on the selected column values
-   
-    setBaseTrigger(true);
-   
 
-    }
-  
+    setBaseTrigger(true);
+
+
+  }
+
 
 
   // Define rows and columns data
@@ -222,7 +222,7 @@ const Home: React.FC = () => {
   function createHeadCells(data) {
     // Create a set to store unique keys (other than 'id')
     const uniqueKeys = new Set();
-    
+
     data.forEach(obj => {
       Object.keys(obj).forEach(key => {
         if (key !== 'id') {
@@ -230,7 +230,7 @@ const Home: React.FC = () => {
         }
       });
     });
-    
+
     // Create the head cells array
     const headCells = Array.from(uniqueKeys).map(key => ({
       id: key,
@@ -238,7 +238,7 @@ const Home: React.FC = () => {
       disablePadding: false,
       label: key
     }));
-    
+
     return headCells;
   }
 
@@ -296,8 +296,18 @@ const Home: React.FC = () => {
         <Grid item xs={10}>
           <Stack flexDirection={'row'} paddingTop={1} paddingBottom={1}>
             <img src={logo} style={{ height: '75px', width: 'min-content', marginRight: '20px' }} />
+            <div style={{
+              "color": "#ffffff94",
+              "fontSize": "21px",
+              "fontWeight": "100",
+              "borderLeft": "1px solid #ffffff73",
+              "paddingLeft": " 30px",
+              "paddingTop": "12px",
+            }}>
+              Smart Data <br/> Assistant
+            </div>
           </Stack>
-          <div style={{ marginTop: '120px' }}>
+          <div style={{ marginTop: '70px' }}>
             <Card style={{ padding: '35px', marginBottom: '30px' }}>
               <Grid container>
                 <Grid xs={5} style={{ padding: '10px' }}>
@@ -326,13 +336,13 @@ const Home: React.FC = () => {
             )}
             {showTabs && (
               <div>
-                                {viewType === 'validate' &&
-                <Tabs sx={{ borderBottom: '1px solid #eee', background: '#FFEB3B' }} value={tabValue} onChange={handleTabChange} >
-                  {selectedColumnValues.includes("singer") && <Tab value="Singer" label="Singer" />}
-                  {selectedColumnValues.includes("region") && <Tab value="Region" label="Region" />}
-                  {selectedColumnValues.includes("language") && <Tab value="Language" label="Language" />}
-                </Tabs>
-}
+                {viewType === 'validate' &&
+                  <Tabs sx={{ borderBottom: '1px solid #eee', background: '#FFEB3B' }} value={tabValue} onChange={handleTabChange} >
+                    {selectedColumnValues.includes("singer") && <Tab value="Singer" label="Singer" />}
+                    {selectedColumnValues.includes("region") && <Tab value="Region" label="Region" />}
+                    {selectedColumnValues.includes("language") && <Tab value="Language" label="Language" />}
+                  </Tabs>
+                }
                 {viewType === 'validate' && (
                   <div style={{ padding: '0px 0px' }}>
                     {tabValue === 'Singer' && selectedColumnValues.includes("singer") && (
