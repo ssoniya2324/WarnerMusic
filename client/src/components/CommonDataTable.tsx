@@ -11,7 +11,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
@@ -277,7 +277,11 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                 {loading && (
                         <TableBody>
                             <TableCell colSpan={headCells.length+2}>
-                            <div style={{textAlign:'center', padding:'100px'}}>Loading...</div>
+                            <div style={{textAlign:'center', padding:'100px'}}>
+                            <Box sx={{ display: 'inline-block' }}>
+      <CircularProgress />
+    </Box>
+                            </div>
                   {error && <div>{error.message}</div>}
                             </TableCell>
                         </TableBody>
