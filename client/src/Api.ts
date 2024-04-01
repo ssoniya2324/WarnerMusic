@@ -28,7 +28,6 @@ export const fetchSingerData = async () => {
   }
 };
 
-
 export const fetchRegionData = async () => {
   try {
     const response = await api.get('/region');
@@ -75,5 +74,42 @@ export const fetchLanguageBaseData = async () => {
     return response.data;
   } catch (error) {
     throw new Error('Failed to fetch language data');
+  }
+};
+
+
+
+export const updateSingerData = async (selectedAlbums: string[]) => {
+  try {
+    console.log(selectedAlbums)
+    
+    const response = await api.put('/singer/update',{selectedAlbums:selectedAlbums});
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update singer data');
+  }
+};
+
+
+export const updateRegionData = async (selectedAlbums: string[]) => {
+  try {
+    console.log(selectedAlbums)
+    
+    const response = await api.put('/region/update',{selectedAlbums:selectedAlbums});
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update region data');
+  }
+};
+
+
+export const updateLanguageData = async (selectedAlbums: string[]) => {
+  try {
+    console.log(selectedAlbums)
+    
+    const response = await api.put('/language/update',{selectedAlbums:selectedAlbums});
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update region data');
   }
 };

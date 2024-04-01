@@ -1,18 +1,14 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import {
-  DataTable, DropdownSelect,
+import {DropdownSelect,
 } from "../components";
-import { GridColDef } from '@mui/x-data-grid';
 import { Grid, Card, CardContent, Stack, Tab, Tabs, Button, Box } from "@mui/material";
 import useRegionData, { RegionData } from '../hooks/useRegionData';
 import useSingerData, { SingerData } from '../hooks/useSingerData';
 import useLanguageData, { LanguageData } from '../hooks/useLanguageData';
-import MUITable from '../components/MUITable';
 import CommonDataTable from '../components/CommonDataTable';
 
 import logo from '../logo.png';
-import { Padding } from '@mui/icons-material';
 
 const Home: React.FC = () => {
   const [tabValue, setTabValue] = React.useState('Singer');
@@ -51,28 +47,28 @@ const Home: React.FC = () => {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
-    if(viewType == 'view'){
-      
-    if (newValue === 'Sample') {
-    }else if (newValue === 'Singer'|| newValue === 'singer') {
-      setSingerBaseTrigger(true);
-    } else if (newValue === 'Region' || newValue === 'region') {
-      setRegionBaseTrigger(true);
-    } else if (newValue === 'Language' || newValue === 'language') {
-      setLanguageBaseTrigger(true);
-    }
+    triggerApiCall(newValue,viewType)
+  };
 
-  }else if(viewType === 'validate'){
-    if (newValue === 'Sample') {
-    }else if (newValue === 'Singer'|| newValue === 'singer') {
-      setSingerTrigger(true);
-    } else if (newValue === 'Region' || newValue === 'region') {
-      setRegionTrigger(true);
-    } else if (newValue === 'Language' || newValue === 'language') {
-      setLanguageTrigger(true);
-    }
 
-  }
+  const triggerApiCall = (newValue: string, viewType: string) => {
+    if (viewType === 'view') {
+      if (newValue === 'Singer' || newValue === 'singer') {
+        setSingerBaseTrigger(true);
+      } else if (newValue === 'Region' || newValue === 'region') {
+        setRegionBaseTrigger(true);
+      } else if (newValue === 'Language' || newValue === 'language') {
+        setLanguageBaseTrigger(true);
+      }
+    } else if (viewType === 'validate') {
+      if (newValue === 'Singer' || newValue === 'singer') {
+        setSingerTrigger(true);
+      } else if (newValue === 'Region' || newValue === 'region') {
+        setRegionTrigger(true);
+      } else if (newValue === 'Language' || newValue === 'language') {
+        setLanguageTrigger(true);
+      }
+    }
   };
 
   const handleCheckboxSelect = (count: number) => {
@@ -294,6 +290,27 @@ const Home: React.FC = () => {
     setColumnSelectedValues(selected);
   };
 
+  const reloadActiveTab =()=>{
+   if(tabValue == 'Singer'){
+    setSingerTrigger(!singerTrigger)
+    if(singerTrigger == true){
+     setSelectedTableValues([])
+    }
+   } 
+   else if(tabValue == 'Region'){
+    setRegionTrigger(!regionTrigger)
+    if(regionTrigger == true){
+     setSelectedTableValues([])
+    }
+   } else if(tabValue == 'Language'){
+    setLanguageTrigger(!languageTrigger)
+    if(languageTrigger == true){
+     setSelectedTableValues([])
+    }
+   }
+ 
+  }
+
   return (
     <>
       <Grid container>
@@ -318,11 +335,17 @@ const Home: React.FC = () => {
                   <DropdownSelect options={columnOptions} isMulti={true } selectedValues={selectedColumnValues} onSelectionChange={handleColumnSelectionChange}/>
                 </Grid>
                 <Grid xs={2} style={{padding:'35px 10px 0px', textAlign:'right'}} >
-                  <Button variant='contained' onClick={handleViewButtonClick}>View</Button> &nbsp;
-                  <Button variant='contained' onClick={handleValidateButtonClick}>Validate</Button>
+                  <Button disabled={selectedColumnValues.length <1 && selectedTableValues.length < 1} variant='contained' onClick={handleViewButtonClick}>View</Button> &nbsp;
+                  <Button disabled={selectedColumnValues.length <1 && selectedTableValues.length < 1} variant='contained' onClick={handleValidateButtonClick}>Validate</Button>
                 </Grid>
               </Grid>
             </Card>
+            {!showTabs && (
+              <div style={{textAlign:'center',padding:'30px'}}>
+              <p style={{fontSize:'20px',color:'#4673c3'}}> Please choose table and columns to view / validate ! </p>
+              </div>
+
+            )}
             {showTabs && (
               <div>
                 <Tabs sx={{ borderBottom: '1px solid #eee', background:'#FFEB3B' }} value={tabValue} onChange={handleTabChange} >
@@ -333,13 +356,13 @@ const Home: React.FC = () => {
                 {viewType === 'validate' && (
                 <div style={{padding:'0px 0px'}}>
                   {tabValue === 'Singer' && selectedColumnValues.includes("singer") && (
-                    <CommonDataTable rows={singerData} headCells={singerHeadCells} loading={singerLoading} error={singerError} description={singerDescription}   actionButtons={true} />
+                    <CommonDataTable viewType={viewType} tabType={'singer'} rows={singerData} headCells={singerHeadCells} loading={singerLoading} error={singerError} description={singerDescription}   actionButtons={true} reloadActiveTab={reloadActiveTab} />
                   )}
                   {tabValue === 'Region' && selectedColumnValues.includes("region") && (
-                    <CommonDataTable rows={regionData} headCells={regionHeadCells} loading={regionLoading} error={regionError} description={regionDescription}   actionButtons={true} />
+                    <CommonDataTable viewType={viewType}  tabType={'region'}  rows={regionData} headCells={regionHeadCells} loading={regionLoading} error={regionError} description={regionDescription}   actionButtons={true}  reloadActiveTab={reloadActiveTab} />
                   )}
                   {tabValue === 'Language' && selectedColumnValues.includes("language") && (
-                    <CommonDataTable rows={languageData} headCells={languageHeadCells} loading={languageLoading} error={languageError} description={languageDescription}   actionButtons={true}/>
+                    <CommonDataTable  viewType={viewType}  tabType={'language'}  rows={languageData} headCells={languageHeadCells} loading={languageLoading} error={languageError} description={languageDescription}   actionButtons={true} reloadActiveTab={reloadActiveTab} />
                   )}
                 </div>
 
