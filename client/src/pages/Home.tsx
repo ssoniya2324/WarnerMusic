@@ -291,18 +291,18 @@ const Home: React.FC = () => {
   };
 
   const reloadActiveTab =()=>{
-   if(tabValue == 'singer'){
+   if(tabValue == 'Singer'){
     setSingerTrigger(!singerTrigger)
     if(singerTrigger == true){
      setSelectedTableValues([])
     }
    } 
-   else if(tabValue == 'region'){
+   else if(tabValue == 'Region'){
     setRegionTrigger(!regionTrigger)
     if(regionTrigger == true){
      setSelectedTableValues([])
     }
-   } else if(tabValue == 'language'){
+   } else if(tabValue == 'Language'){
     setLanguageTrigger(!languageTrigger)
     if(languageTrigger == true){
      setSelectedTableValues([])
@@ -356,13 +356,13 @@ const Home: React.FC = () => {
                 {viewType === 'validate' && (
                 <div style={{padding:'0px 0px'}}>
                   {tabValue === 'Singer' && selectedColumnValues.includes("singer") && (
-                    <CommonDataTable tabType={'singer'} rows={singerData} headCells={singerHeadCells} loading={singerLoading} error={singerError} description={singerDescription}   actionButtons={true} reloadActiveTab={reloadActiveTab} />
+                    <CommonDataTable viewType={viewType} tabType={'singer'} rows={singerData} headCells={singerHeadCells} loading={singerLoading} error={singerError} description={singerDescription}   actionButtons={true} reloadActiveTab={reloadActiveTab} />
                   )}
                   {tabValue === 'Region' && selectedColumnValues.includes("region") && (
-                    <CommonDataTable tabType={'region'}  rows={regionData} headCells={regionHeadCells} loading={regionLoading} error={regionError} description={regionDescription}   actionButtons={true}  reloadActiveTab={reloadActiveTab} />
+                    <CommonDataTable viewType={viewType}  tabType={'region'}  rows={regionData} headCells={regionHeadCells} loading={regionLoading} error={regionError} description={regionDescription}   actionButtons={true}  reloadActiveTab={reloadActiveTab} />
                   )}
                   {tabValue === 'Language' && selectedColumnValues.includes("language") && (
-                    <CommonDataTable tabType={'language'}  rows={languageData} headCells={languageHeadCells} loading={languageLoading} error={languageError} description={languageDescription}   actionButtons={true} reloadActiveTab={reloadActiveTab} />
+                    <CommonDataTable  viewType={viewType}  tabType={'language'}  rows={languageData} headCells={languageHeadCells} loading={languageLoading} error={languageError} description={languageDescription}   actionButtons={true} reloadActiveTab={reloadActiveTab} />
                   )}
                 </div>
 

@@ -40,6 +40,7 @@ const ConfirmationModal = ({
   }, [updateSingerError, updateSingerData]);
 
   const handleApprove = () => {
+    reloadActiveTab()
     setTriggerUpdate(true); // Set trigger to true when approve button is clicked
   };
 

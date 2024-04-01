@@ -21,10 +21,11 @@ interface EnhancedTableHeadProps {
     rowCount: number;
     headCells: HeadCell[];
     actionButtons: boolean;
+    viewType:string;
 }
 
 function EnhancedTableHead(props: EnhancedTableHeadProps) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, actionButtons } = props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, actionButtons, viewType } = props;
 
     const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);

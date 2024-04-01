@@ -42,7 +42,6 @@ const EnhancedTableToolbar = ({
 
   const approveClick=()=>{
     handleOpen()
-    reloadActiveTab()
   }
   return (
     <>

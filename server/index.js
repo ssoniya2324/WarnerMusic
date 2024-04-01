@@ -28,60 +28,85 @@ connection.connect((err, conn) => {
     console.log('Connected to Snowflake!');
 });
 
-// Validate Singer  API
-app.get('/singer', (request, response) => {
-    const sqlQuery = "select  album,singer,predicted_singer,singer_status from bet_poc.wmg.music_result where singer_Status = 'False'";
-    connection.execute({
-        sqlText: sqlQuery,
-        complete: (err, stmt, rows) => {
-            if (err) {
-                console.error('Error executing SQL query:', err.message);
-                response.status(500).json({ error: 'Internal Server Error' });
-                return;
+
+
+function executeSnowflakeQuery(sqlText) {
+    return new Promise((resolve, reject) => {
+        connection.execute({
+            sqlText: sqlText,
+            complete: (err, stmt, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
             }
-            console.log('Query executed successfully');
-            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
-            response.json(rowsWithIds);
-        }
+        });
     });
+}
+
+// Validate Singer API
+
+app.get('/singer', async (request, response) => {
+    const sqlQuery = "SELECT album, singer, bet_poc.gen_ai.chatgpt('Predicted Singer Name for album '||album) AS Predicted_singer FROM bet_poc.wmg.music WHERE singer != predicted_singer;";
+    
+    executeSnowflakeQuery(sqlQuery)
+        .then(result1 => {
+            console.log("First query executed successfully.");
+            const rowsWithIds = result1.map((row, index) => ({ id: index + 1, ...row }));
+            response.json(rowsWithIds);
+            const sqlQuery_1 = "INSERT OVERWRITE INTO bet_poc.wmg.test_prediction SELECT album, singer, bet_poc.gen_ai.chatgpt('Predicted Singer Name for album '||album) AS Predicted_singer, region, bet_poc.gen_ai.chatgpt('Predicted country name in shortform in three or two letters for album titled '||album) AS Predicted_region, language, bet_poc.gen_ai.chatgpt('Predicted language Name for album '||album) AS Predicted_language FROM bet_poc.wmg.music;";
+            return executeSnowflakeQuery(sqlQuery_1);
+        })
+        .then(() => {
+            console.log("Second query executed in the background successfully.");
+        })
+        .catch(error => {
+            console.error('Error executing background SQL query:', error.message);
+        });
 });
 
 // Validate Region API
-app.get('/region', (request, response) => {
-    const sqlQuery = "select album,singer,region, predicted_region,region_status from bet_poc.wmg.music_result where region_status = 'False'";
-    connection.execute({
-        sqlText: sqlQuery,
-        complete: (err, stmt, rows) => {
-            if (err) {
-                console.error('Error executing SQL query:', err.message);
-                response.status(500).json({ error: 'Internal Server Error' });
-                return;
-            }
-            console.log('Query executed successfully');
-            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+
+app.get('/region', async (request, response) => {
+    const sqlQuery = "select album, singer,region, bet_poc.gen_ai.chatgpt('Predicted country name in shortform in three or two letters for album titled '||album) as Predicted_region  from  bet_poc.wmg.music where region != predicted_region;";
+    
+    executeSnowflakeQuery(sqlQuery)
+        .then(result1 => {
+            console.log("First query executed successfully.");
+            const rowsWithIds = result1.map((row, index) => ({ id: index + 1, ...row }));
             response.json(rowsWithIds);
-        }
-    });
+            const sqlQuery_1 = "INSERT OVERWRITE INTO bet_poc.wmg.test_prediction SELECT album, singer, bet_poc.gen_ai.chatgpt('Predicted Singer Name for album '||album) AS Predicted_singer, region, bet_poc.gen_ai.chatgpt('Predicted country name in shortform in three or two letters for album titled '||album) AS Predicted_region, language, bet_poc.gen_ai.chatgpt('Predicted language Name for album '||album) AS Predicted_language FROM bet_poc.wmg.music;";
+            return executeSnowflakeQuery(sqlQuery_1);
+        })
+        .then(() => {
+            console.log("Second query executed in the background successfully.");
+        })
+        .catch(error => {
+            console.error('Error executing background SQL query:', error.message);
+        });
 });
 
-// Validate Region API
-app.get('/language', (request, response) => {
+
+// Validate Language API
+
+app.get('/language', async (request, response) => {
+    const sqlQuery = "select album, singer, language,bet_poc.gen_ai.chatgpt('Predicted language Name for album '||album) as Predicted_language  from  bet_poc.wmg.music where language != predicted_language;";
     
-    const sqlQuery = "select album,singer,language, predicted_language,language_status from bet_poc.wmg.music_result where language_status = 'False'";
-    
-    connection.execute({
-        sqlText: sqlQuery,
-        complete: (err, stmt, rows) => {
-            if (err) {
-                console.error('Error executing SQL query:', err.message);
-                response.status(500).json({ error: 'Internal Server Error' });
-                return;
-            }
-            console.log('Query executed successfully');
-            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
+    executeSnowflakeQuery(sqlQuery)
+        .then(result1 => {
+            console.log("First query executed successfully.");
+            const rowsWithIds = result1.map((row, index) => ({ id: index + 1, ...row }));
             response.json(rowsWithIds);
-        }
-    });
+            const sqlQuery_1 = "INSERT OVERWRITE INTO bet_poc.wmg.test_prediction SELECT album, singer, bet_poc.gen_ai.chatgpt('Predicted Singer Name for album '||album) AS Predicted_singer, region, bet_poc.gen_ai.chatgpt('Predicted country name in shortform in three or two letters for album titled '||album) AS Predicted_region, language, bet_poc.gen_ai.chatgpt('Predicted language Name for album '||album) AS Predicted_language FROM bet_poc.wmg.music;";
+            return executeSnowflakeQuery(sqlQuery_1);
+        })
+        .then(() => {
+            console.log("Second query executed in the background successfully.");
+        })
+        .catch(error => {
+            console.error('Error executing background SQL query:', error.message);
+        });
 });
 
 //Base singer API
@@ -157,11 +182,11 @@ app.put('/singer/update', (request, response) => {
 
     // Construct the SQL query dynamically
     const sqlQuery = `
-        UPDATE bet_poc.wmg.music_predicted a
-        SET singer = b.Predicted_singer
-        FROM bet_poc.wmg.music_result b
-        WHERE b.singer_status ='False' AND a.album = b.album AND
-        a.album IN (${selectedAlbums.map(album => `'${album}'`).join(',')});
+    UPDATE bet_poc.wmg.music a
+    SET singer = b.Predicted_singer
+    FROM bet_poc.wmg.test_prediction b
+    WHERE a.album = b.album AND
+    a.album IN (${selectedAlbums.map(album => `'${album}'`).join(',')});
     `;
     
     // Execute the SQL query
@@ -191,12 +216,13 @@ app.put('/region/update', (request, response) => {
 
     // Construct the SQL query dynamically
     const sqlQuery = `
-    UPDATE bet_poc.wmg.music_predicted a
-            SET singer = b.Predicted_singer
-            FROM bet_poc.wmg.music_result b
-            WHERE b.region_status ='False' AND a.album = b.album AND
+    UPDATE bet_poc.wmg.music a
+            SET region = b.Predicted_region
+            FROM bet_poc.wmg.test_prediction b
+            WHERE a.album = b.album AND
             a.album IN (${selectedAlbums.map(album => `'${album}'`).join(',')});
-    `;
+            `;
+            
     
     // Execute the SQL query
     connection.execute({
@@ -225,12 +251,13 @@ app.put('/language/update', (request, response) => {
 
     // Construct the SQL query dynamically
     const sqlQuery = `
-    UPDATE bet_poc.wmg.music_predicted a
-    SET singer = b.Predicted_singer
-    FROM bet_poc.wmg.music_result b
-    WHERE b.language_status ='False' AND a.album = b.album AND
+    UPDATE bet_poc.wmg.music a
+    SET language = b.Predicted_language
+    FROM bet_poc.wmg.test_prediction b
+    WHERE  a.album = b.album AND
     a.album IN (${selectedAlbums.map(album => `'${album}'`).join(',')});
     `;
+    
     
     // Execute the SQL query
     connection.execute({

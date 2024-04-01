@@ -17,6 +17,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
 import { Data, HeadCell } from '../types';
 import EnhancedTableHead from './EnhancedTableHead';
+import ConfirmationModal from './ConfirmationModal';
+import { Album } from '@mui/icons-material';
 
 
 
@@ -66,15 +68,17 @@ interface ICommonDataTableProps {
     error:any;
     description:string;
     actionButtons:boolean;
+    dynamicKey:string;
+    viewType:string;
     reloadActiveTab :()=>void
 }
-export default function CommonDataTable({ rows, tabType, headCells, loading, error, description, actionButtons,reloadActiveTab}: ICommonDataTableProps) {
+export default function CommonDataTable({ rows, tabType, headCells, loading, error, description, actionButtons, viewType, reloadActiveTab}: ICommonDataTableProps) {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('singer');
-    const [selected, setSelected] = React.useState<readonly number[]>([]);
+    const [selected, setSelected] = React.useState< number[]>([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
     React.useEffect(() => {
         setSelected([]); // Clear selected items when rows change
@@ -99,6 +103,8 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
     };
 
     const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+       if(viewType == 'validate'){
+        
         const selectedIndex = selected.indexOf(id);
         let newSelected: readonly number[] = [];
         if (
@@ -121,6 +127,8 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
             );
         }
         setSelected(newSelected);
+
+    }
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -140,6 +148,17 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows?.length - page * rowsPerPage);
 
+    const [open, setOpen] = React.useState(false);
+    const [selectedIds, setSelectedIds] = React.useState<number>();
+    const [dynamicValues, setSelectedDynamicValues] = React.useState<string[]>([]);
+  
+    
+    const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const approveClick = (event: React.MouseEvent<unknown>, id: number, row:any) => {
+   setSelectedDynamicValues ([row.ALBUM]);
+    setOpen(true)
+};
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
@@ -158,6 +177,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                             onRequestSort={handleRequestSort}
                             rowCount={rows?.length}
                             headCells={headCells}
+                            viewType={viewType}
                             actionButtons={actionButtons}
                         />
                                         {!loading && (
@@ -193,7 +213,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
 
                                             </TableCell>
                                             {headCells?.map((cell) => (
-                                                <TableCell key={cell.id} style={{maxWidth:'100px'}}>
+                                                <TableCell key={cell.id} style={{maxWidth: '100px'}}>
                                                     {row[cell.id]}
                                                 </TableCell>
                                             ))}
@@ -223,6 +243,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                                                     <span>
 
                                                         <Button
+                                                         onClick={(event) => approveClick(event, row.id, row)}
                                                             disabled={selected.length > 0}
                                                             variant="outlined"
                                                             sx={{
@@ -245,15 +266,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                                         </TableRow>
                                     );
                                 })}
-                            {emptyRows > 0 && (                               
-                                 <TableRow
-                                    style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={headCells.length + 2} />
-                                </TableRow>
-                            )}
+                            
                         
 
                            
@@ -288,6 +301,15 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                 control={<Switch checked={dense} onChange={handleChangeDense} />}
                 label="Dense padding"
             />
+            <ConfirmationModal
+        tabType={tabType}
+        reloadActiveTab={reloadActiveTab} 
+        open={open}
+        onClose={handleClose}
+        numSelected={1}
+        selectedDynamicValues={dynamicValues}
+      />
         </Box>
+        
     );
 }
