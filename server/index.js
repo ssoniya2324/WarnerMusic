@@ -110,45 +110,17 @@ app.get('/language', async (request, response) => {
 });
 
 //Base singer API
-app.get('/singerBase', (request, response) => {
-    const sqlQuery = "select album, singer from bet_poc.wmg.music";
-    connection.execute({
-        sqlText: sqlQuery,
-        complete: (err, stmt, rows) => {
-            if (err) {
-                console.error('Error executing SQL query:', err.message);
-                response.status(500).json({ error: 'Internal Server Error' });
-                return;
-            }
-            console.log('Query executed successfully');
-            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
-            response.json(rowsWithIds);
-        }
-    });
-});
+app.post('/baseData', (request, response) => {
+    const {selectedAlbums} = request.body
+    // Check if albumsToUpdate is provided and is an array
+    if (!Array.isArray(selectedAlbums)) {
+        response.status(400).json({ error: 'Invalid request body format' });
+        return;
+    }
 
-// Base Region API
-app.get('/regionBase', (request, response) => {
-    const sqlQuery = "select album, region from bet_poc.wmg.music";
-    connection.execute({
-        sqlText: sqlQuery,
-        complete: (err, stmt, rows) => {
-            if (err) {
-                console.error('Error executing SQL query:', err.message);
-                response.status(500).json({ error: 'Internal Server Error' });
-                return;
-            }
-            console.log('Query executed successfully');
-            const rowsWithIds = rows.map((row, index) => ({ id: index + 1, ...row }));
-            response.json(rowsWithIds);
-        }
-    });
-});
+const columnsSql = selectedAlbums.join(', ');
 
-//Base Language API
-app.get('/languageBase', (request, response) => {
-    
-    const sqlQuery = "select album, language from bet_poc.wmg.music";
+    const sqlQuery = `SELECT ${columnsSql} FROM bet_poc.wmg.music`;
     
     connection.execute({
         sqlText: sqlQuery,
@@ -164,6 +136,7 @@ app.get('/languageBase', (request, response) => {
         }
     });
 });
+
 
 // Start the server
 app.listen(port, () => {

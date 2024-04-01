@@ -48,12 +48,12 @@ export const fetchLanguageData = async () => {
 };
 
 
-export const fetchSingerBaseData = async () => {
+export const fetchBaseData = async (selectedAlbums: string[]) => {
   try {
-    const response = await api.get('/singerBase');
+    const response = await api.post('/baseData',{selectedAlbums:selectedAlbums});
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch singer data');
+    throw new Error('Failed to fetch base data');
   }
 };
 

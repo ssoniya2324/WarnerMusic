@@ -1,14 +1,14 @@
 // useSingerData.ts
 import { useState, useEffect } from 'react';
-import { fetchSingerData } from '../Api';
+import { fetchBaseData } from '../Api';
 
-export interface SingerData {
+export interface BaseData {
   CC_CALL_CENTER_ID: string;
   CC_NAME: string;
 }
 
-const useSingerData = (trigger: boolean, viewType:string, columns?:string[]) => {
-  const [data, setData] = useState<SingerData[]>([]);
+const useBaseData = (trigger: boolean, viewType:string, columns?:string[]) => {
+  const [data, setData] = useState<BaseData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -17,8 +17,9 @@ const useSingerData = (trigger: boolean, viewType:string, columns?:string[]) => 
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        const responseData =  await fetchSingerData()
+        const allColumns = columns ? ['ALBUM', ...new Set(columns)] : ['ALBUM'];
+      
+        const responseData = await fetchBaseData(allColumns || []);
         setData(responseData);
         setLoading(false);
       } catch (error) {
@@ -27,9 +28,9 @@ const useSingerData = (trigger: boolean, viewType:string, columns?:string[]) => 
       }
     };
     fetchData();
-  }, [trigger]); // Run effect when trigger changes
+  }, [trigger,columns]); // Run effect when trigger changes
 
   return { data, loading, error };
 };
 
-export default useSingerData;
+export default useBaseData;
