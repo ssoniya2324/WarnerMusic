@@ -11,7 +11,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Button, CircularProgress, Input, OutlinedInput, TextField } from '@mui/material';
+import { Badge, Button, CircularProgress, Input, OutlinedInput, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
@@ -179,6 +179,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                             onSelectAllClick={handleSelectAllClick}
                             onRequestSort={handleRequestSort}
                             rowCount={rows?.length}
+                            rows={rows}
                             headCells={headCells}
                             viewType={viewType}
                             actionButtons={actionButtons}
@@ -217,14 +218,30 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                                                 </TableCell>
                                                 {headCells?.map((cell) => (
                                                     <TableCell key={cell.id} style={{ maxWidth: '100px' }}>
-                                                        {row[cell.id]}
+                                                        {row[cell.id] == "R" ? (
+                                                            <Badge badgeContent="Rejected" sx={{
+                                                                "& .MuiBadge-badge": {
+                                                                    color:'#d48e8e',
+                                                                  backgroundColor: "#f2e2e5"
+                                                                }
+                                                              }} />
+                                                        ) : row[cell.id] == "C" ? (
+                                                            <Badge badgeContent="Corrected" sx={{
+                                                                "& .MuiBadge-badge": {
+                                                                    color:'#1e8f9e',
+                                                                  backgroundColor: "#d1faff"
+                                                                }
+                                                              }} />
+                                                        ) : (
+                                                            row[cell.id]
+                                                        )}
                                                     </TableCell>
                                                 ))}
 
                                                 <TableCell>
-                                                {(actionButtons == true &&
-                                                    <CustomInput />
-                                                )}
+                                                    {(actionButtons == true &&
+                                                        <CustomInput />
+                                                    )}
                                                 </TableCell>
 
                                                 <TableCell align="right">

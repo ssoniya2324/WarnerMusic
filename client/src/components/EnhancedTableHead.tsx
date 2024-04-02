@@ -21,21 +21,32 @@ interface EnhancedTableHeadProps {
     rowCount: number;
     headCells: HeadCell[];
     actionButtons: boolean;
-    viewType:string;
+    viewType: string;
+    rows:any;
 }
 
 function EnhancedTableHead(props: EnhancedTableHeadProps) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, actionButtons, viewType } = props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, actionButtons,rows } = props;
 
     const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
 
+
+    const uniqueStatusCodes = Array.from(new Set(rows.map(cell => cell.STATUS_CD).filter(status => status !== null)));
+
+    // Step 2: Map STATUS_CD values to labels
+    const statusCdOptions = uniqueStatusCodes.map(statusCode => ({
+        value: statusCode,
+        label: statusCode === 'R' ? 'Rejected' : 'Corrected',
+    }));
+
     return (
         <TableHead>
             <TableRow>
-                <TableCell padding="checkbox" style={{ width: '70px' }}>
+                    <TableCell padding="checkbox" style={{ width: '70px' }}>
                     {actionButtons && (
+
                         <Tooltip title={numSelected === rowCount ? 'Deselect All' : 'Select All'}>
                             <Checkbox
                                 color="primary"
@@ -47,8 +58,10 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
                                 }}
                             />
                         </Tooltip>
-                    )}
-                </TableCell>
+                )}
+
+                    </TableCell>
+
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
@@ -61,7 +74,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
-                            {headCell.label}
+                            {headCell.id === "STATUS_CD" ? '' : headCell.label}
                             {orderBy === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -70,6 +83,8 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
                         </TableSortLabel>
                     </TableCell>
                 ))}
+
+
                 <TableCell></TableCell>
                 <TableCell></TableCell>
             </TableRow>

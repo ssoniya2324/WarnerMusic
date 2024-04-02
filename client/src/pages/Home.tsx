@@ -36,7 +36,7 @@ const Home: React.FC = () => {
 
 
 
-  const baseDescription = "Base records";
+  const baseDescription = "Base records from selected table - Music";
 
 
   const singerDescription = "Validated Singer Records with non matched data";
@@ -268,7 +268,7 @@ const Home: React.FC = () => {
     label: string;
   }
   const tableOptions: item[] = [
-    { value: 'Table', label: 'Music' },
+    { value: 'Music', label: 'Music' },
   ];
 
   const columnOptions = [
@@ -305,7 +305,7 @@ const Home: React.FC = () => {
     }
 
   }
-
+ 
 
   return (
     <>
@@ -332,7 +332,7 @@ const Home: React.FC = () => {
                   <Box textAlign="left" paddingBottom="5px" fontWeight="fontWeightBold">
                     Table
                   </Box>
-                  <DropdownSelect options={tableOptions} isMulti={false} selectedValues={selectedTableValues} onSelectionChange={handleTableSelectionChange} defaultSelection={"Table"} />
+                  <DropdownSelect options={tableOptions} isMulti={false} selectedValues={selectedTableValues} onSelectionChange={handleTableSelectionChange} defaultSelection={"Music"} />
                 </Grid>
                 <Grid xs={5} style={{ padding: '10px' }}>
                   <Box textAlign="left" paddingBottom="5px" fontWeight="fontWeightBold">
