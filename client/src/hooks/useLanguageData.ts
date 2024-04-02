@@ -1,6 +1,6 @@
 // useLanguageData.ts
 import { useState, useEffect } from 'react';
-import { fetchLanguageData, fetchLanguageBaseData } from '../Api';
+import { fetchLanguageData } from '../Api';
 
 export interface LanguageData {
   CC_CALL_CENTER_ID: string;
@@ -16,7 +16,7 @@ const useLanguageData = (trigger: boolean, viewType:string) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const responseData = (viewType =='validate')? await fetchLanguageData():await fetchLanguageBaseData();
+        const responseData = await fetchLanguageData()
         setData(responseData);
         setLoading(false);
       } catch (error) {

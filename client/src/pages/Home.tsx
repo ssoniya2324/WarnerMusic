@@ -32,7 +32,7 @@ const Home: React.FC = () => {
   const { data: regionData, loading: regionLoading, error: regionError } = useRegionData(regionTrigger, viewType);
   const { data: languageData, loading: languageLoading, error: languageError } = useLanguageData(languageTrigger, viewType);
 
-  const { data: baseData, loading: baseLoading, error: baseError } = useBaseData(baseTrigger, viewType, selectedColumnValues);
+  const { data: baseData, loading: baseLoading, error: baseError } = useBaseData(baseTrigger, viewType, selectedColumnValues,singerData,regionData,languageData);
 
 
 
@@ -148,6 +148,12 @@ const Home: React.FC = () => {
       label: 'PREDICTED SINGER',
     },
     {
+      id: 'userChoice',
+      numeric: false,
+      disablePadding: false,
+      label: '',
+    },
+    {
       id: 'action',
       numeric: false,
       disablePadding: false,
@@ -180,6 +186,12 @@ const Home: React.FC = () => {
       label: 'PREDICTED REGION',
     },
     {
+      id: 'userChoice',
+      numeric: false,
+      disablePadding: false,
+      label: '',
+    },
+    {
       id: 'action',
       numeric: false,
       disablePadding: false,
@@ -210,6 +222,12 @@ const Home: React.FC = () => {
       numeric: false,
       disablePadding: false,
       label: 'PREDICTED LANGUAGE',
+    },
+    {
+      id: 'userChoice',
+      numeric: false,
+      disablePadding: false,
+      label: '',
     },
     {
       id: 'action',

@@ -144,7 +144,7 @@ app.listen(port, () => {
 });
 
 
-app.put('/singer/update', (request, response) => {
+app.put('/singer/approve', (request, response) => {
 
     const {selectedAlbums} = request.body
     // Check if albumsToUpdate is provided and is an array
@@ -178,7 +178,7 @@ app.put('/singer/update', (request, response) => {
 });
 
 
-app.put('/region/update', (request, response) => {
+app.put('/region/approve', (request, response) => {
 
     const {selectedAlbums} = request.body
     // Check if albumsToUpdate is provided and is an array
@@ -213,7 +213,7 @@ app.put('/region/update', (request, response) => {
 });
 
 
-app.put('/language/update', (request, response) => {
+app.put('/language/approve', (request, response) => {
 
     const {selectedAlbums} = request.body
     // Check if albumsToUpdate is provided and is an array
@@ -231,6 +231,39 @@ app.put('/language/update', (request, response) => {
     a.album IN (${selectedAlbums.map(album => `'${album}'`).join(',')});
     `;
     
+    
+    // Execute the SQL query
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Update query executed successfully');
+            response.json({ message: 'Albums updated successfully' });
+        }
+    });
+});
+
+app.put('/singer/reject', (request, response) => {
+
+    const {selectedAlbums} = request.body
+    // Check if albumsToUpdate is provided and is an array
+    if (!Array.isArray(selectedAlbums)) {
+        response.status(400).json({ error: 'Invalid request body format' });
+        return;
+    }
+
+    // Construct the SQL query dynamically
+    const sqlQuery = `
+    UPDATE bet_poc.wmg.music a
+    SET singer = b.Predicted_singer
+    FROM bet_poc.wmg.test_prediction b
+    WHERE a.album = b.album AND
+    a.album IN (${selectedAlbums.map(album => `'${album}'`).join(',')});
+    `;
     
     // Execute the SQL query
     connection.execute({

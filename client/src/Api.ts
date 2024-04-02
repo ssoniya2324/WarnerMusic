@@ -19,6 +19,17 @@ api.interceptors.response.use(
   }
 );
 
+
+export const fetchBaseData = async (selectedAlbums: string[]) => {
+  try {
+    const response = await api.post('/baseData',{selectedAlbums:selectedAlbums});
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch base data');
+  }
+};
+
+
 export const fetchSingerData = async () => {
   try {
     const response = await api.get('/singer');
@@ -47,39 +58,20 @@ export const fetchLanguageData = async () => {
   }
 };
 
-
-export const fetchBaseData = async (selectedAlbums: string[]) => {
+export const updateData = async (dataType:string, selectedAlbums:string[],actionType:string) => {
   try {
-    const response = await api.post('/baseData',{selectedAlbums:selectedAlbums});
+    console.log(selectedAlbums);
+    
+    const endpoint = `/${dataType}/${actionType}`; // Construct endpoint dynamically
+    const response = await api.put(endpoint, { selectedAlbums });
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch base data');
+    throw new Error(`Failed to update ${dataType} data`);
   }
 };
 
 
-export const fetchRegionBaseData = async () => {
-  try {
-    const response = await api.get('/regionBase');
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to fetch region data');
-  }
-};
-
-
-export const fetchLanguageBaseData = async () => {
-  try {
-    const response = await api.get('/languageBase');
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to fetch language data');
-  }
-};
-
-
-
-export const updateSingerData = async (selectedAlbums: string[]) => {
+export const rejectData = async (selectedAlbums: string[]) => {
   try {
     console.log(selectedAlbums)
     
@@ -87,29 +79,5 @@ export const updateSingerData = async (selectedAlbums: string[]) => {
     return response.data;
   } catch (error) {
     throw new Error('Failed to update singer data');
-  }
-};
-
-
-export const updateRegionData = async (selectedAlbums: string[]) => {
-  try {
-    console.log(selectedAlbums)
-    
-    const response = await api.put('/region/update',{selectedAlbums:selectedAlbums});
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to update region data');
-  }
-};
-
-
-export const updateLanguageData = async (selectedAlbums: string[]) => {
-  try {
-    console.log(selectedAlbums)
-    
-    const response = await api.put('/language/update',{selectedAlbums:selectedAlbums});
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to update region data');
   }
 };

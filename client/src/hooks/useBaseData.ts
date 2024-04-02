@@ -1,13 +1,16 @@
 // useSingerData.ts
 import { useState, useEffect } from 'react';
 import { fetchBaseData } from '../Api';
+import useSingerData, { SingerData } from './useSingerData';
+import useRegionData from './useRegionData';
+import useLanguageData from './useLanguageData';
 
 export interface BaseData {
   CC_CALL_CENTER_ID: string;
   CC_NAME: string;
 }
 
-const useBaseData = (trigger: boolean, viewType:string, columns?:string[]) => {
+const useBaseData = (trigger: boolean, viewType:string, columns?:string[],singerData?:any,regionData?:any, languageData?:any) => {
   const [data, setData] = useState<BaseData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -28,7 +31,7 @@ const useBaseData = (trigger: boolean, viewType:string, columns?:string[]) => {
       }
     };
     fetchData();
-  }, [trigger,columns]); // Run effect when trigger changes
+  }, [trigger,columns,singerData,regionData,languageData]); // Run effect when trigger changes
 
   return { data, loading, error };
 };

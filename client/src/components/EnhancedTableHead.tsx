@@ -39,8 +39,8 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
                         <Tooltip title={numSelected === rowCount ? 'Deselect All' : 'Select All'}>
                             <Checkbox
                                 color="primary"
-                                indeterminate={numSelected > 0 && numSelected < rowCount}
-                                checked={rowCount > 0 && numSelected === rowCount}
+                                indeterminate={numSelected > 1 && numSelected < rowCount}
+                                checked={rowCount > 1 && numSelected === rowCount}
                                 onChange={onSelectAllClick}
                                 inputProps={{
                                     'aria-label': 'select all',
@@ -70,6 +70,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
                         </TableSortLabel>
                     </TableCell>
                 ))}
+                <TableCell></TableCell>
                 <TableCell></TableCell>
             </TableRow>
         </TableHead>

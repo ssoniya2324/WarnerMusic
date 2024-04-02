@@ -4,31 +4,31 @@ import { FormControl, MenuItem, Select, Checkbox, ListItemText, Box } from '@mui
 
 export function DropdownSelect({ options, isMulti, onSelectionChange, defaultSelection }) {
     const [selectedOptions, setSelectedOptions] = useState(isMulti ? [] : '');
+    const isAllSelected = options.length > 0 && selectedOptions.length === options.length;
 
     useEffect(() => {
-      if (defaultSelection !== undefined && isMulti==false) {
-          setSelectedOptions(defaultSelection);
-      }
-  }, [defaultSelection]);
+        if (defaultSelection !== undefined && isMulti == false) {
+            setSelectedOptions(defaultSelection);
+        }
+    }, [defaultSelection]);
 
     const handleChange = (event) => {
-        const selected = event.target.value;
-        setSelectedOptions(selected);
-
-        // Call the callback function to inform the parent about selection change
-        if (onSelectionChange) {
-            onSelectionChange(selected);
-        }
-    };
-
-    const handleSelectAll = () => {
-        if (selectedOptions.length === options.length) {
-            setSelectedOptions([]);
+        const {
+            target: { value },
+        } = event;
+        if (value[value.length - 1] === 'selectAll') {
+            // "Select All" was last clicked
+            setSelectedOptions(isAllSelected ? [] : options.map(option => option.value));
+            if (onSelectionChange) {
+                onSelectionChange(isAllSelected ? [] : options.map(option => option.value));
+            }
         } else {
-            setSelectedOptions(options.map(option => option.value));
+            setSelectedOptions(value);
+            if (onSelectionChange) {
+                onSelectionChange(value);
+            }
         }
     };
-
     const getSelectedLabels = () => {
         if (isMulti) {
             return selectedOptions.map(value => {
@@ -47,27 +47,23 @@ export function DropdownSelect({ options, isMulti, onSelectionChange, defaultSel
                 multiple={isMulti}
                 value={selectedOptions}
                 onChange={handleChange}
-                renderValue={() => {
-                    const selectedLabels = getSelectedLabels();
-                    if (isMulti) {
-                        return (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                {selectedLabels.map((label, index) => (
-                                    <React.Fragment key={label}>
-                                        <Box sx={{ borderRadius: 1, bgcolor: 'background.paper', px: 1, paddingRight:'0px', paddingLeft:'0px' }}>
-                                            {label}
-                                        </Box>
-                                        {index < selectedLabels.length - 1 && <>,</>}
-                                    </React.Fragment>
-                                ))}
-                            </Box>
-                        );
-                    } else {
-                        return selectedLabels;
-                    }
+                renderValue={selected => (typeof selected === 'string' ? selected : selected.join(', '))}
+                MenuProps={{
+                    PaperProps: {
+                        style: {
+                            maxHeight: 48 * 4.5 + 8,
+                            width: 250,
+                        },
+                    },
                 }}
-                inputProps={{ 'aria-label': 'Without label' }}
+            // other props
             >
+                {isMulti && (
+                    <MenuItem value="selectAll">
+                        <Checkbox checked={isAllSelected || false} />
+                        <ListItemText primary="Select All" />
+                    </MenuItem>
+                )}
                 {options.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                         {isMulti && (
@@ -77,6 +73,7 @@ export function DropdownSelect({ options, isMulti, onSelectionChange, defaultSel
                     </MenuItem>
                 ))}
             </Select>
+
         </FormControl>
     );
 }

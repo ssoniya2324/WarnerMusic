@@ -9,6 +9,7 @@ const ConfirmationModal = ({
   numSelected,
   tabType,
   selectedDynamicValues,
+  actionType,
   reloadActiveTab
 }: {
   open: boolean;
@@ -16,6 +17,7 @@ const ConfirmationModal = ({
   numSelected: number;
   tabType:string;
   selectedDynamicValues: string[];
+  actionType:string;
   reloadActiveTab: () => void;
 }) => {
 
@@ -29,19 +31,19 @@ const ConfirmationModal = ({
   };
   const [cardId, setCardId] = React.useState('question'); // State to trigger update
   const [triggerUpdate, setTriggerUpdate] = React.useState(false); // State to trigger update
-  const [updateSingerError, setUpdateSingerError] = useState(null);
-  const [updateSingerData, setUpdateSingerData] = useState(null);
-  const prevUpdateSingerError = useRef();
-  const prevUpdateSingerData = useRef();
+  const [updateError, setupdateError] = useState(null);
+  const [updateData, setUpdateData] = useState(null);
+  const prevupdateError = useRef();
+  const prevupdateData = useRef();
 
   useEffect(() => {
-    prevUpdateSingerError.current = updateSingerError;
-    prevUpdateSingerData.current = updateSingerData;
-  }, [updateSingerError, updateSingerData]);
+    prevupdateError.current = updateError;
+    prevupdateData.current = updateData;
+  }, [updateError, updateData]);
 
-  const handleApprove = () => {
+  const handleApproveReject = () => {
     reloadActiveTab()
-    setTriggerUpdate(true); // Set trigger to true when approve button is clicked
+    setTriggerUpdate(true);
   };
 
 
@@ -49,21 +51,21 @@ const handleClose = () => {
     onClose();
     // Reset error and data values when modal is closed
     setTriggerUpdate(false)
-    setUpdateSingerError(null);
-    setUpdateSingerData(null);
+    setupdateError(null);
+    setUpdateData(null);
     setCardId('question')
 
   };
  
-  const { loading, error, data } = useValidateTableData(triggerUpdate, selectedDynamicValues,tabType);
+  const { loading, error, data } = useValidateTableData(triggerUpdate, selectedDynamicValues,tabType,actionType);
 
   useEffect(() => {
     if (!loading && !error && data) {
-      setUpdateSingerData(data);
+      setUpdateData(data);
       reloadActiveTab();
       setCardId('answer')
     } else if (error) {
-      setUpdateSingerError(error);
+      setupdateError(error);
     }
   }, [loading, error, data]);
 
@@ -73,10 +75,10 @@ const handleClose = () => {
       <Box sx={style}>
         {cardId === 'question' && (
           <Card id="question" style={{ padding: '30px', textAlign: 'left', width: '100%' }}>
-           {(!updateSingerError?.message && (
+           {(!updateError?.message && (
             <div>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Approve {numSelected} selected records
+            {(actionType=='approve'? 'Approve':'Reject' )}   {numSelected} selected records
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 3 }}>
               {selectedDynamicValues?.map((value, index) => (
@@ -93,14 +95,14 @@ const handleClose = () => {
                 Cancel
               </Button>{' '}
               &nbsp;
-              <Button onClick={handleApprove} variant="contained">
-                Approve
+              <Button onClick={handleApproveReject} variant="contained">
+               {(actionType == 'approve'? 'Approve':'Proceed' )}  
               </Button>
               </div> </div>
            ) )}
-            {updateSingerError?.message &&(
+            {updateError?.message &&(
                 <div style={{textAlign:'center'}}>
-                    <p>{updateSingerError?.message}</p>
+                    <p>{updateError?.message}</p>
                     <Button  variant='outlined' onClick={handleClose}>Close</Button>
                 </div>
             )}
@@ -109,7 +111,7 @@ const handleClose = () => {
         {cardId === 'answer' && (
           <Card id="answer" style={{ padding: '30px', textAlign: 'center' }}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-            {updateSingerData && updateSingerData.message}
+            {updateData && updateData.message}
             </Typography>
             <div style={{ textAlign: 'center', padding: '40px 0px 0px' }}>
               <Button onClick={handleClose} variant="outlined">

@@ -1,6 +1,6 @@
 // useRegionData.ts
 import { useState, useEffect } from 'react';
-import { fetchRegionData, fetchRegionBaseData } from '../Api';
+import { fetchRegionData } from '../Api';
 
 export interface RegionData {
   CC_CALL_CENTER_ID: string;
@@ -18,7 +18,7 @@ const useRegionData = (trigger: boolean, viewType:string) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const responseData = (viewType =='validate')? await fetchRegionData():await fetchRegionBaseData();
+        const responseData = await fetchRegionData();
         setData(responseData);
         setLoading(false);
       } catch (error) {

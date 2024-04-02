@@ -25,6 +25,8 @@ const EnhancedTableToolbar = ({
 }: EnhancedTableToolbarProps) => {
   const [open, setOpen] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
+  const [actionType, setSelectedActionType] = React.useState<string>('approve');
+
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -41,7 +43,13 @@ const EnhancedTableToolbar = ({
   };
 
   const approveClick=()=>{
+    setSelectedActionType('approve')
     handleOpen()
+  }
+  const rejectClick=()=>{
+    handleOpen()
+    setSelectedActionType('reject')
+    
   }
   return (
     <>
@@ -55,7 +63,7 @@ const EnhancedTableToolbar = ({
           }),
         }}
       >
-        {numSelected > 0 ? (
+        {numSelected > 1 ? (
           <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
             {numSelected} selected
           </Typography>
@@ -74,10 +82,11 @@ const EnhancedTableToolbar = ({
             {description}
           </Typography>
         )}
-        {numSelected > 0 && actionButtons ? (
+        {numSelected > 1 && actionButtons ? (
           <>
             <Tooltip title="Reject all selected">
-              <Button variant="outlined" sx={{ marginRight: '5PX', borderColor: '#ff4ac3', color: '#ff4ac3' }}>
+              <Button variant="outlined" sx={{ marginRight: '5PX', borderColor: '#ff4ac3', color: '#ff4ac3' }}
+              onClick={rejectClick}>
                 <CloseIcon style={{ fontSize: '15px', padding: '0px 2px' }} /> Reject
               </Button>
             </Tooltip>
@@ -101,6 +110,7 @@ const EnhancedTableToolbar = ({
         open={open}
         onClose={handleClose}
         numSelected={numSelected}
+        actionType={actionType}
         selectedDynamicValues={selectedDynamicValues}
       />
     </>
