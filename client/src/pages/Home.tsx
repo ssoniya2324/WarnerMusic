@@ -13,6 +13,8 @@ import useBaseData, { BaseData } from '../hooks/useBaseData';
 import CommonDataTable from '../components/CommonDataTable';
 
 import logo from '../logo.png';
+import latentview from '../latentview.png';
+
 
 const Home: React.FC = () => {
   const [tabValue, setTabValue] = React.useState('Singer');
@@ -315,14 +317,17 @@ const Home: React.FC = () => {
           <Stack flexDirection={'row'} paddingTop={1} paddingBottom={1}>
             <img src={logo} style={{ height: '75px', width: 'min-content', marginRight: '20px' }} />
             <div style={{
-              "color": "#ffffff94",
+              "color": "rgb(255 255 255 / 85%)",
               "fontSize": "21px",
               "fontWeight": "100",
               "borderLeft": "1px solid #ffffff73",
-              "paddingLeft": " 30px",
+              "paddingLeft": " 12px",
               "paddingTop": "12px",
             }}>
+              <img style={{height:"60px"}} src={latentview}/>
+              <span style={{display:'inline-block',verticalAlign:'12px'}}>
               Smart Data <br/> Assistant
+              </span>
             </div>
           </Stack>
           <div style={{ marginTop: '70px' }}>
