@@ -62,7 +62,7 @@ export const updateData = async (dataType:string, selectedAlbums:string[],action
   try {
     console.log(selectedAlbums);
     
-    const endpoint = `/${dataType}/${actionType}`; // Construct endpoint dynamically
+    const endpoint = actionType=='approve'? `/${dataType}/update`:`/reject`
     const response = await api.put(endpoint, { selectedAlbums });
     return response.data;
   } catch (error) {
@@ -70,14 +70,3 @@ export const updateData = async (dataType:string, selectedAlbums:string[],action
   }
 };
 
-
-export const rejectData = async (selectedAlbums: string[]) => {
-  try {
-    console.log(selectedAlbums)
-    
-    const response = await api.put('/singer/update',{selectedAlbums:selectedAlbums});
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to update singer data');
-  }
-};

@@ -144,7 +144,7 @@ app.listen(port, () => {
 });
 
 
-app.put('/singer/approve', (request, response) => {
+app.put('/singer/update', (request, response) => {
 
     const {selectedAlbums} = request.body
     // Check if albumsToUpdate is provided and is an array
@@ -178,7 +178,7 @@ app.put('/singer/approve', (request, response) => {
 });
 
 
-app.put('/region/approve', (request, response) => {
+app.put('/region/update', (request, response) => {
 
     const {selectedAlbums} = request.body
     // Check if albumsToUpdate is provided and is an array
@@ -213,7 +213,7 @@ app.put('/region/approve', (request, response) => {
 });
 
 
-app.put('/language/approve', (request, response) => {
+app.put('/language/update', (request, response) => {
 
     const {selectedAlbums} = request.body
     // Check if albumsToUpdate is provided and is an array
