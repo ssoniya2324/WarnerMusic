@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/WarnerMusic/static/css/main.72793a63.css",
-    "main.js": "/WarnerMusic/static/js/main.321645b3.js",
+    "main.css": "/WarnerMusic/static/css/main.d41d5a5b.css",
+    "main.js": "/WarnerMusic/static/js/main.64007b98.js",
     "static/media/logo.png": "/WarnerMusic/static/media/logo.5b8303740e7e6b03e27a.png",
     "index.html": "/WarnerMusic/index.html",
-    "main.72793a63.css.map": "/WarnerMusic/static/css/main.72793a63.css.map",
-    "main.321645b3.js.map": "/WarnerMusic/static/js/main.321645b3.js.map"
+    "main.d41d5a5b.css.map": "/WarnerMusic/static/css/main.d41d5a5b.css.map",
+    "main.64007b98.js.map": "/WarnerMusic/static/js/main.64007b98.js.map"
   },
   "entrypoints": [
-    "static/css/main.72793a63.css",
-    "static/js/main.321645b3.js"
+    "static/css/main.d41d5a5b.css",
+    "static/js/main.64007b98.js"
   ]
 }

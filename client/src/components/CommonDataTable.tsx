@@ -20,6 +20,7 @@ import EnhancedTableHead from './EnhancedTableHead';
 import ConfirmationModal from './ConfirmationModal';
 import { Album } from '@mui/icons-material';
 import CustomInput from './CustomInput';
+import { useState } from 'react';
 
 
 
@@ -69,9 +70,9 @@ interface ICommonDataTableProps {
     error: any;
     description: string;
     actionButtons: boolean;
-    dynamicKey: string;
+    dynamicKey?: string;
     viewType: string;
-    reloadActiveTab: () => void
+    reloadActiveTab?: () => void
 }
 export default function CommonDataTable({ rows, tabType, headCells, loading, error, description, actionButtons, viewType, reloadActiveTab }: ICommonDataTableProps) {
     const [order, setOrder] = React.useState<Order>('asc');
@@ -162,6 +163,12 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
         setActionType(actionType);
         setOpen(true)
     };
+
+    const [userInput, setInputValue] = useState('');
+
+    const handleValueChange = (newValue) => {
+        setInputValue(newValue);
+    };
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
@@ -172,6 +179,8 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >
+                         {!loading && (
+                            <>
                         <EnhancedTableHead
                             numSelected={selected.length}
                             order={order}
@@ -184,7 +193,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                             viewType={viewType}
                             actionButtons={actionButtons}
                         />
-                        {!loading && (
+                       
                             <TableBody>
                                 {stableSort(rows, getComparator(order, orderBy))
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -217,21 +226,22 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
 
                                                 </TableCell>
                                                 {headCells?.map((cell) => (
+                                                    
                                                     <TableCell key={cell.id} style={{ maxWidth: '100px' }}>
                                                         {row[cell.id] == "R" ? (
                                                             <Badge badgeContent="Rejected" sx={{
                                                                 "& .MuiBadge-badge": {
-                                                                    color:'#d48e8e',
-                                                                  backgroundColor: "#f2e2e5"
+                                                                    color: '#d48e8e',
+                                                                    backgroundColor: "#f2e2e5"
                                                                 }
-                                                              }} />
+                                                            }} />
                                                         ) : row[cell.id] == "C" ? (
                                                             <Badge badgeContent="Corrected" sx={{
                                                                 "& .MuiBadge-badge": {
-                                                                    color:'#1e8f9e',
-                                                                  backgroundColor: "#d1faff"
+                                                                    color: '#1e8f9e',
+                                                                    backgroundColor: "#d1faff"
                                                                 }
-                                                              }} />
+                                                            }} />
                                                         ) : (
                                                             row[cell.id]
                                                         )}
@@ -240,7 +250,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
 
                                                 <TableCell>
                                                     {(actionButtons == true &&
-                                                        <CustomInput />
+                                                        <CustomInput onValueChange={handleValueChange} />
                                                     )}
                                                 </TableCell>
 
@@ -301,6 +311,19 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
 
 
                             </TableBody>
+                            </>
+                        )}
+                        {!loading && rows.length < 1 && (
+                            <TableBody>
+                            <TableCell colSpan={headCells.length + 3}>
+                                <div style={{ textAlign: 'center', padding: '100px' }}>
+                                    <Box sx={{ display: 'inline-block' }}>
+
+                                        No Data Found
+                                    </Box>
+                                </div>
+                            </TableCell>
+                        </TableBody>
                         )}
                         {loading && (
                             <TableBody>
@@ -310,10 +333,11 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                                             <CircularProgress />
                                         </Box>
                                     </div>
-                                    {error && <div>{error.message}</div>}
                                 </TableCell>
                             </TableBody>
                         )}
+
+
                     </Table>
                     <Table>
 
@@ -339,6 +363,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                 open={open}
                 onClose={handleClose}
                 numSelected={1}
+                UserInput={userInput}
                 selectedDynamicValues={dynamicValues}
                 actionType={actionType}
             />

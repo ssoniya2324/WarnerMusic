@@ -7,16 +7,21 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from 'react';
 
 
+type CustomInputProps = {
+    onValueChange: (value: string) => void;
+  };
 
-export default function CustomInput() {
+export default function CustomInput({ onValueChange }: CustomInputProps) {
     const [value, setValue] = useState('');
-
     const handleChange = (event) => {
-      setValue(event.target.value);
+        const newValue = event.target.value;
+        setValue(newValue);
+        onValueChange(newValue); 
     };
   
     const handleClear = () => {
-      setValue('');
+        setValue('');
+        onValueChange('');
     };
   
     return (

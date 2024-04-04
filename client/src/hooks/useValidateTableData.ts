@@ -1,20 +1,19 @@
-// useUpdateSingerData.ts
 import { useState, useEffect } from 'react';
-import {updateData } from '../Api';
+import {updateData,rejectData } from '../Api';
 
 
-const useValidateTableData = (trigger: boolean, selectedItems:string[],tabType:string, actionType:string) => {
+const useValidateTableData = (trigger: boolean, selectedItems:string[], tabType:string, actionType:string, UserInput?:string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<any>([]);
 
   useEffect(() => {
-    if (!trigger) return; // Exit if trigger is false
+    if (!trigger) return; 
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        const responseData =  await updateData(tabType,selectedItems,actionType);
+        const responseData = actionType == 'approve'?  await updateData(tabType,selectedItems,UserInput):  await rejectData(tabType,selectedItems);
         setData(responseData);
         setLoading(false);
 
@@ -25,8 +24,7 @@ const useValidateTableData = (trigger: boolean, selectedItems:string[],tabType:s
       }
     };
     fetchData();
-  }, [trigger]); // Run effect when trigger changes
-
+  }, [trigger]); 
   return { data, loading, error };
 };
 

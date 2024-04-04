@@ -45,7 +45,7 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
         <TableHead>
             <TableRow>
                     <TableCell padding="checkbox" style={{ width: '70px' }}>
-                    {actionButtons && (
+                    {actionButtons && rows.length > 0 && (
 
                         <Tooltip title={numSelected === rowCount ? 'Deselect All' : 'Select All'}>
                             <Checkbox

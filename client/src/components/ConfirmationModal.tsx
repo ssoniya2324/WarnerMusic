@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Card, Chip, Modal, Typography } from '@mui/material';
+import { Box, Button, Card, Chip, Modal, Typography, capitalize } from '@mui/material';
 import useValidateTableData from '../hooks/useValidateTableData';
 import { useEffect, useRef, useState } from 'react';
 
@@ -9,6 +9,7 @@ const ConfirmationModal = ({
   numSelected,
   tabType,
   selectedDynamicValues,
+  UserInput,
   actionType,
   reloadActiveTab
 }: {
@@ -17,8 +18,9 @@ const ConfirmationModal = ({
   numSelected: number;
   tabType:string;
   selectedDynamicValues: string[];
+  UserInput?:string;
   actionType:string;
-  reloadActiveTab: () => void;
+  reloadActiveTab?: () => void;
 }) => {
 
   const style = {
@@ -42,7 +44,6 @@ const ConfirmationModal = ({
   }, [updateError, updateData]);
 
   const handleApproveReject = () => {
-    reloadActiveTab()
     setTriggerUpdate(true);
   };
 
@@ -57,7 +58,7 @@ const handleClose = () => {
 
   };
  
-  const { loading, error, data } = useValidateTableData(triggerUpdate, selectedDynamicValues,tabType,actionType);
+  const { loading, error, data } = useValidateTableData(triggerUpdate, selectedDynamicValues,tabType,actionType,UserInput);
 
   useEffect(() => {
     if (!loading && !error && data) {
@@ -102,7 +103,7 @@ const handleClose = () => {
            ) )}
             {updateError?.message &&(
                 <div style={{textAlign:'center'}}>
-                    <p>{updateError?.message}</p>
+                    <p style={{textTransform:"capitalize"}}>{updateError?.message}</p>
                     <Button  variant='outlined' onClick={handleClose}>Close</Button>
                 </div>
             )}
@@ -110,7 +111,7 @@ const handleClose = () => {
         )}
         {cardId === 'answer' && (
           <Card id="answer" style={{ padding: '30px', textAlign: 'center' }}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{textTransform:"capitalize"}}>
             {updateData && updateData.message}
             </Typography>
             <div style={{ textAlign: 'center', padding: '40px 0px 0px' }}>
