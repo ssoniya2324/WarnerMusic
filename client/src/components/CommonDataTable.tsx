@@ -18,7 +18,7 @@ import EnhancedTableToolbar from './EnhancedTableToolbar';
 import { Data, HeadCell } from '../types';
 import EnhancedTableHead from './EnhancedTableHead';
 import ConfirmationModal from './ConfirmationModal';
-import { Album } from '@mui/icons-material';
+import { Album, Height } from '@mui/icons-material';
 import CustomInput from './CustomInput';
 import { useState } from 'react';
 
@@ -79,7 +79,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
     const [orderBy, setOrderBy] = React.useState<keyof Data>('singer');
     const [selected, setSelected] = React.useState<number[]>([]);
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
+    const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
     React.useEffect(() => {
@@ -228,13 +228,25 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
                                                 {headCells?.map((cell) => (
                                                     
                                                     <TableCell key={cell.id} style={{ maxWidth: '100px' }}>
-                                                        {row[cell.id] == "R" ? (
+                                                        {
+                                                        typeof row[cell.id] === "string" && row[cell.id].includes("http") ?(
+                                                        <div> 
+                                                            
+                                                            <img src={row[cell.id]} alt="Image" style={{height:'70px', borderRadius:'3PX', boxShadow:'rgb(0 0 0 / 12%) 0px 0px 3px 3px'}}/>
+
+                                                        </div>
+
+                                                    ) :
+                                                        row[cell.id] == "R" ? (
+                                                            <div> 
                                                             <Badge badgeContent="Rejected" sx={{
                                                                 "& .MuiBadge-badge": {
                                                                     color: '#d48e8e',
                                                                     backgroundColor: "#f2e2e5"
                                                                 }
                                                             }} />
+                                                            </div>
+
                                                         ) : row[cell.id] == "C" ? (
                                                             <Badge badgeContent="Corrected" sx={{
                                                                 "& .MuiBadge-badge": {

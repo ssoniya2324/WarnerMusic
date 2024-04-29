@@ -56,6 +56,7 @@ export const updateData = async (columnName:string, selectedAlbums:string[], use
     throw new Error(`Failed to update ${columnName} data`);
   }
 };
+
 //Reject API Call
 export const rejectData = async (columnName:string, selectedAlbums:string[]) => {
   try {
@@ -68,4 +69,25 @@ export const rejectData = async (columnName:string, selectedAlbums:string[]) => 
     throw new Error(`Failed to reject ${columnName} data`);
   }
 };
+
+// Get Metrics API Call
+export const getMetrics = async () => {
+  try {
+    const response = await api.get('/getMetrics');
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch metrics');
+  }
+};
+
+export const ingestData = async (data: any) => {
+  try {
+    const endpoint = `/ingest`;
+    const response = await api.put(endpoint, data); 
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update data`);
+  }
+};
+
 

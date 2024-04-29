@@ -1,6 +1,7 @@
 const snowflake = require('snowflake-sdk');
 const express = require('express');
 const cors = require('cors');
+const async = require('async');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -49,7 +50,7 @@ function executeSnowflakeQuery(sqlText) {
 app.get('/getData/:columnName', async (request, response) => {
     const columnName = request.params.columnName;
 
-    const sqlQuery = `SELECT album, ${columnName}, bet_poc.gen_ai.chatgpt('Predicted ${columnName} Name for album '||album) AS proposed_${columnName}, case when ${columnName}=proposed_${columnName} then 'P' else 'F' end as status_cd FROM bet_poc.wmg.music WHERE ${columnName} != proposed_${columnName} and status_cd is null OR status_cd = 'F'`;
+    const sqlQuery = `SELECT album_url, album, ${columnName}, bet_poc.gen_ai.chatgpt('Predicted ${columnName} Name for album '||album) AS proposed_${columnName}, case when ${columnName}=proposed_${columnName} then 'P' else 'F' end as status_cd FROM bet_poc.wmg.music WHERE ${columnName} != proposed_${columnName} and status_cd is null OR status_cd = 'F'`;
 
     executeSnowflakeQuery(sqlQuery)
         .then(result1 => {
@@ -74,7 +75,7 @@ app.post('/baseData', (request, response) => {
         return;
     }
 
-    const columnsToSelect = [...selectedAlbums, 'Status_cd'];
+    const columnsToSelect = [...selectedAlbums, 'Status_cd', 'album_url'];
     const columnsSql = columnsToSelect.join(', ');
 
     const sqlQuery = `SELECT ${columnsSql} FROM bet_poc.wmg.music`;
@@ -240,6 +241,137 @@ app.get('/getallrejected', (request, response) => {
         }
     });
 });
+
+// Get Count of the table
+app.get('/getCount', (request, response) => {
+    const sqlQuery = 'select count(*) from bet_poc.wmg.music';
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            response.json(rows);
+        }
+    });
+});
+
+// Get Corrected Count of the table
+app.get('/getCorrectedCount', (request, response) => {
+    const sqlQuery = "select count(*) from bet_poc.wmg.music where status_cd = 'C'";
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            response.json(rows);
+        }
+    });
+});
+
+
+// Get Rejected Count of the table
+app.get('/getRejectedCount', (request, response) => {
+    const sqlQuery = "select count(*) from bet_poc.wmg.music where status_cd = 'R'";
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            response.json(rows);
+        }
+    });
+});
+
+// Get description
+app.get('/getDescription', (request, response) => {
+    const sqlQuery = "describe table wmg.music";
+    connection.execute({
+        sqlText: sqlQuery,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                response.status(500).json({ error: 'Internal Server Error' });
+                return;
+            }
+            console.log('Query executed successfully');
+            response.json(rows);
+        }
+    });
+});
+
+app.get('/getMetrics', (request, response) => {
+    const getCountQuery = 'select count(*) as total_count from bet_poc.wmg.music';
+    const getCorrectedCountQuery = "select count(*) as corrected_count from bet_poc.wmg.music where status_cd = 'C'";
+    const getRejectedCountQuery = "select count(*) as rejected_count from bet_poc.wmg.music where status_cd = 'R'";
+
+    const queries = [
+        getCountQuery,
+        getCorrectedCountQuery,
+        getRejectedCountQuery
+    ];
+
+    const results = {};
+
+    // Execute all queries in parallel
+    async.each(queries, (query, callback) => {
+        connection.execute({
+            sqlText: query,
+            complete: (err, stmt, rows) => {
+                if (err) {
+                    console.error('Error executing SQL query:', err.message);
+                    callback(err);
+                } else {
+                    const key = query.includes('status_cd') ? query.includes("'C'") ? 'corrected_count' : 'rejected_count' : 'total_count';
+                    const value = rows[0][Object.keys(rows[0])[0]]; // Extract count value
+                    results[key] = value;
+                    callback();
+                }
+            }
+        });
+    }, (err) => {
+        if (err) {
+            response.status(500).json({ error: 'Internal Server Error' });
+        } else {
+            console.log('All queries executed successfully');
+            response.json(results);
+        }
+    });
+});
+app.put('/ingest', async (req, res) => {
+    const { album, singer, region, language } = req.body;
+  
+    try {
+      const query = `
+        INSERT INTO bet_poc.wmg.music (album, singer, region, language, status_cd)
+        VALUES (?, ?, ?, ?, null)
+      `;
+      const binds = [album, singer, region, language];
+      await connection.execute({
+        sqlText: query,
+        binds: binds
+      });
+  
+      res.status(200).send('Data ingested successfully');
+    } catch (error) {
+      console.error('Error ingesting data:', error);
+      res.status(500).send('Internal server error');
+    }
+});
+
+
+
 
 // Start the server
 app.listen(port, () => {

@@ -6,6 +6,9 @@ import CommonDataTable from '../components/CommonDataTable';
 import Header from '../components/Header';
 import TableSelection from '../components/TableSelection';
 import { useGenericData } from '../hooks/useGenericData';
+import useMetrics from '../hooks/useMetrics';
+import Metrics from '../components/Metrics';
+import noimage from '../noimage.jpeg';
 
 function createDynamicHeadCells(data) {
   if (!data || data.length === 0) return [];
@@ -63,6 +66,13 @@ function createHeadCells(data) {
     label: key
   }));
 
+   // Find index of ALBUM_URL and move it to the beginning
+   const albumUrlIndex = headCells.findIndex(cell => cell.id === 'ALBUM_URL');
+   if (albumUrlIndex !== -1) {
+     const albumUrlCell = headCells.splice(albumUrlIndex, 1)[0];
+     headCells.unshift(albumUrlCell);
+   }
+   
   return headCells;
 }
 
@@ -96,10 +106,48 @@ const Home: React.FC = () => {
   const [forceRefreshData, setForceRefreshData] = useState(0);
   const [visitedTabs, setVisitedTabs] = React.useState({});
 
-  const { data: baseData, loading: baseLoading, error: baseError } = useBaseData(baseTrigger, selectedColumnValues);
   const { data, loading, error } = useGenericData(activeDataType, forceRefreshData);
+
+  const { data: metricsData, loading: metricsLoading, error: metricsError } = useMetrics(baseTrigger,data);
+  const { data: baseData, loading: baseLoading, error: baseError } = useBaseData(baseTrigger, selectedColumnValues);
+
+
+  const baseHeadCells = createHeadCells(baseData).map(cell => {
+    if (cell.id === 'ALBUM_URL') {
+      return {
+        ...cell,
+        label: 'ALBUM IMG'
+      };
+    }
+    return cell;
+  });
+  const updatedBaseData = baseData.map(row => {
+    if (!row['ALBUM_URL']) {
+      return { ...row, 'ALBUM_URL': <img src={noimage}alt="Image" style={{height:'70px', width:'70px', borderRadius:'3PX', boxShadow:'rgb(0 0 0 / 12%) 0px 0px 3px 3px'}}/>}
+    }
+    return row;
+  });
+
+
+  const updatedData = data.map(row => {
+    if (!row['ALBUM_URL']) {
+      return { ...row, 'ALBUM_URL': <img src={noimage}alt="Image" style={{height:'70px', width:'70px', borderRadius:'3PX', boxShadow:'rgb(0 0 0 / 12%) 0px 0px 3px 3px'}}/>}
+    }
+    return row;
+  });
+
+  const dynHeadCells = createDynamicHeadCells(data).map(cell => {
+    if (cell.id === 'ALBUM_URL') {
+      return {
+        ...cell,
+        label: 'Album Image'
+      };
+    }
+    return cell;
+  });
   
-  const baseHeadCells = createHeadCells(baseData);
+
+  
 
 
   useEffect(() => {
@@ -173,11 +221,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Grid container>
-        <Grid item xs={1}></Grid>
-        <Grid item xs={10}>
-          <Header />
-          <div style={{ marginTop: '70px' }}>
+     <div style={{ marginTop: '70px' }}>
             <TableSelection
               tableOptions={tableOptions}
               columnOptions={columnOptions}
@@ -188,7 +232,9 @@ const Home: React.FC = () => {
               handleViewButtonClick={handleViewButtonClick}
               handleValidateButtonClick={handleValidateButtonClick}
             />
-
+       {metricsData!=null && 
+            <Metrics data={metricsData} />
+          }
             {!showTabs && (
               <div style={{ textAlign: 'center', padding: '30px' }}>
                 <p style={{ fontSize: '20px', color: '#4673c3' }}> Please choose table and columns to view / validate ! </p>
@@ -219,8 +265,8 @@ const Home: React.FC = () => {
                       <CommonDataTable
                         viewType={viewType}
                         tabType={tabValue.toLowerCase()}
-                        rows={data}
-                        headCells={createDynamicHeadCells(data)}
+                        rows={updatedData}
+                        headCells={dynHeadCells}
                         loading={loading}
                         error={error}
                         description={`${tabValue} Data Description`}
@@ -234,16 +280,13 @@ const Home: React.FC = () => {
                 {viewType === 'view' && (
                   <div style={{ padding: '0px 0px' }}>
 
-                    <CommonDataTable rows={baseData} headCells={baseHeadCells} loading={baseLoading} error={baseError} description={baseDescription} actionButtons={false} />
+                    <CommonDataTable rows={updatedBaseData} headCells={baseHeadCells} loading={baseLoading} error={baseError} description={baseDescription} actionButtons={false} />
 
                   </div>
                 )}
               </div>
             )}
           </div>
-        </Grid>
-        <Grid item xs={1}></Grid>
-      </Grid>
     </>
   );
 };

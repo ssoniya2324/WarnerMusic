@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Grid, Box, Button, Card } from "@mui/material";
 import { DropdownSelect } from ".";
+import { Link } from "react-router-dom";
 
 // Props should include the selection options and handlers for changes
 const TableSelection = ({ tableOptions, columnOptions, selectedTableValues, selectedColumnValues, handleTableSelectionChange, handleColumnSelectionChange, handleViewButtonClick, handleValidateButtonClick }) => {
@@ -48,6 +49,10 @@ const TableSelection = ({ tableOptions, columnOptions, selectedTableValues, sele
           </Button>
         </Grid>
       </Grid>
+     
+      <Link to="/form"><Button> Ingest Data</Button> </Link>
+
+      
     </Card>
   );
 };

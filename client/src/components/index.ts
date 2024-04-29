@@ -5,6 +5,8 @@ export * from "./ConfirmationModal";
 export * from "./EnhancedTableHead";
 export * from "./CustomInput";
 export * from "./Header";
+export * from "./Metrics";
+
 
 
 

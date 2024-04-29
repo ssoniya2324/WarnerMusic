@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { FormControl, MenuItem, Select, Checkbox, ListItemText, Box } from '@mui/material';
 
-export function DropdownSelect({ options, isMulti, onSelectionChange, defaultSelection }) {
+export function DropdownSelect({ options, isMulti, onSelectionChange, defaultSelection, isDisabled }) {
     const [selectedOptions, setSelectedOptions] = useState(isMulti ? [] : '');
     const isAllSelected = options.length > 0 && selectedOptions.length === options.length;
 
@@ -47,6 +47,7 @@ export function DropdownSelect({ options, isMulti, onSelectionChange, defaultSel
                 multiple={isMulti}
                 value={selectedOptions}
                 onChange={handleChange}
+                disabled={isDisabled}
                 renderValue={selected => (typeof selected === 'string' ? selected : selected.join(', '))}
                 MenuProps={{
                     PaperProps: {
