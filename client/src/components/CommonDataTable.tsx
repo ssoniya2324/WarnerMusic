@@ -81,6 +81,7 @@ export default function CommonDataTable({ rows, tabType, headCells, loading, err
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(true);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [filteredRows, setFilteredRows] = React.useState<Data[]>(rows);
 
     React.useEffect(() => {
         setSelected([]); // Clear selected items when rows change

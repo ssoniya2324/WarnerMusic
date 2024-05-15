@@ -50,7 +50,11 @@ function executeSnowflakeQuery(sqlText) {
 app.get('/getData/:columnName', async (request, response) => {
     const columnName = request.params.columnName;
 
-    const sqlQuery = `SELECT album_url, album, ${columnName}, bet_poc.gen_ai.chatgpt('Predicted ${columnName} Name for album '||album) AS proposed_${columnName}, case when ${columnName}=proposed_${columnName} then 'P' else 'F' end as status_cd FROM bet_poc.wmg.music WHERE ${columnName} != proposed_${columnName} and status_cd is null OR status_cd = 'F'`;
+    
+    const sqlQuery = (columnName == 'region')? 
+    `SELECT album_url, album, ${columnName}, bet_poc.gen_ai.chatgpt('Predicted Country Name for album in one name ' ||album  || coalesce(year,'')) AS proposed_region, case when ${columnName}=proposed_${columnName} then 'P' else 'F' end as status_cd FROM bet_poc.wmg.music WHERE ${columnName} != proposed_${columnName} and status_cd is null OR status_cd = 'F'`
+    : `SELECT album_url, album, ${columnName}, bet_poc.gen_ai.chatgpt('Predicted ${columnName} Name for album in one name' ||album  || coalesce(year,'')) AS proposed_${columnName}, case when ${columnName}=proposed_${columnName} then 'P' else 'F' end as status_cd FROM bet_poc.wmg.music WHERE ${columnName} != proposed_${columnName} and status_cd is null OR status_cd = 'F'`;
+    
 
     executeSnowflakeQuery(sqlQuery)
         .then(result1 => {
@@ -75,7 +79,7 @@ app.post('/baseData', (request, response) => {
         return;
     }
 
-    const columnsToSelect = [...selectedAlbums, 'Status_cd', 'album_url'];
+    const columnsToSelect = ['album_url' , 'year',...selectedAlbums, 'Status_cd' ];
     const columnsSql = columnsToSelect.join(', ');
 
     const sqlQuery = `SELECT ${columnsSql} FROM bet_poc.wmg.music`;
@@ -315,58 +319,73 @@ app.get('/getMetrics', (request, response) => {
     const getCountQuery = 'select count(*) as total_count from bet_poc.wmg.music';
     const getCorrectedCountQuery = "select count(*) as corrected_count from bet_poc.wmg.music where status_cd = 'C'";
     const getRejectedCountQuery = "select count(*) as rejected_count from bet_poc.wmg.music where status_cd = 'R'";
+    const getMismatchedCountQuery = "SELECT COUNT(*) FROM ( \
+        SELECT \
+            album, \
+            singer, \
+            bet_poc.gen_ai.chatgpt('Predicted singer Name for album ' || album) AS proposed_singer, \
+            region, \
+            bet_poc.gen_ai.chatgpt('Predicted region name in two or three letters for the album named ' || album) AS proposed_region, \
+            language, \
+            bet_poc.gen_ai.chatgpt('Predicted language Name for album ' || album) AS proposed_language \
+        FROM \
+            bet_poc.wmg.music \
+        WHERE \
+            status_cd IS NULL OR status_cd != 'C' OR status_cd != 'R' \
+    ) AS subquery";
+    
+        const queries = [
+            { key: 'total_count', query: getCountQuery },
+            { key: 'corrected_count', query: getCorrectedCountQuery },
+            { key: 'rejected_count', query: getRejectedCountQuery },
+            { key: 'mismatched_count', query: getMismatchedCountQuery }
+        ];
+        
+const results = {};
 
-    const queries = [
-        getCountQuery,
-        getCorrectedCountQuery,
-        getRejectedCountQuery
-    ];
-
-    const results = {};
-
-    // Execute all queries in parallel
-    async.each(queries, (query, callback) => {
-        connection.execute({
-            sqlText: query,
-            complete: (err, stmt, rows) => {
-                if (err) {
-                    console.error('Error executing SQL query:', err.message);
-                    callback(err);
-                } else {
-                    const key = query.includes('status_cd') ? query.includes("'C'") ? 'corrected_count' : 'rejected_count' : 'total_count';
-                    const value = rows[0][Object.keys(rows[0])[0]]; // Extract count value
-                    results[key] = value;
-                    callback();
-                }
+// Execute all queries in parallel
+async.each(queries, (queryObj, callback) => {
+    connection.execute({
+        sqlText: queryObj.query,
+        complete: (err, stmt, rows) => {
+            if (err) {
+                console.error('Error executing SQL query:', err.message);
+                callback(err);
+            } else {
+                const key = queryObj.key;
+                const value = rows[0][Object.keys(rows[0])[0]]; // Extract count value
+                results[key] = value;
+                callback();
             }
-        });
-    }, (err) => {
-        if (err) {
-            response.status(500).json({ error: 'Internal Server Error' });
-        } else {
-            console.log('All queries executed successfully');
-            response.json(results);
         }
     });
+}, (err) => {
+    if (err) {
+        response.status(500).json({ error: 'Internal Server Error' });
+    } else {
+        console.log('All queries executed successfully');
+        response.json(results);
+    }
+});
 });
 app.put('/ingest', async (req, res) => {
     const { album, singer, region, language } = req.body;
-  
+
     try {
-      const query = `
+        const query = `
         INSERT INTO bet_poc.wmg.music (album, singer, region, language, status_cd)
         VALUES (?, ?, ?, ?, null)
       `;
-      const binds = [album, singer, region, language];
-      await connection.execute({
-        sqlText: query,
-        binds: binds
-      });
-  
-      res.status(200).send('Data ingested successfully');
+        const binds = [album, singer, region, language];
+        await connection.execute({
+            sqlText: query,
+            binds: binds
+        });
+
+        res.status(200).send('Data ingested successfully');
     } catch (error) {
-      console.error('Error ingesting data:', error);
-      res.status(500).send('Internal server error');
+        console.error('Error ingesting data:', error);
+        res.status(500).send('Internal server error');
     }
 });
 

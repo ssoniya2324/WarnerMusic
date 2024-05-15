@@ -103,12 +103,14 @@ const Home: React.FC = () => {
   const [selectedTableValues, setSelectedTableValues] = useState([]);
   const [activeDataType, setActiveDataType] = useState('');
   const [baseTrigger, setBaseTrigger] = React.useState(0);
+  const [metricsTrigger, setMetricsTrigger] = React.useState(0);
+
   const [forceRefreshData, setForceRefreshData] = useState(0);
   const [visitedTabs, setVisitedTabs] = React.useState({});
 
   const { data, loading, error } = useGenericData(activeDataType, forceRefreshData);
 
-  const { data: metricsData, loading: metricsLoading, error: metricsError } = useMetrics(baseTrigger,data);
+  const { data: metricsData, loading: metricsLoading, error: metricsError } = useMetrics(metricsTrigger,data);
   const { data: baseData, loading: baseLoading, error: baseError } = useBaseData(baseTrigger, selectedColumnValues);
 
 
@@ -233,7 +235,7 @@ const Home: React.FC = () => {
               handleValidateButtonClick={handleValidateButtonClick}
             />
        {metricsData!=null && 
-            <Metrics data={metricsData} />
+            <Metrics data={metricsData} loading={metricsLoading} error={metricsError} />
           }
             {!showTabs && (
               <div style={{ textAlign: 'center', padding: '30px' }}>

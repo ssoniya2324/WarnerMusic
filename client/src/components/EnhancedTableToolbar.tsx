@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Tooltip, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Tooltip, Toolbar, Typography, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import ConfirmationModal from './ConfirmationModal'; // Import the ConfirmationModal component
@@ -26,6 +26,7 @@ const EnhancedTableToolbar = ({
   const [open, setOpen] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
   const [actionType, setSelectedActionType] = React.useState<string>('approve');
+  const [albumSearch, setAlbumSearch] = React.useState('');
 
 
   const handleOpen = () => setOpen(true);
@@ -51,6 +52,10 @@ const EnhancedTableToolbar = ({
     setSelectedActionType('reject')
     
   }
+  const handleAlbumSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    setAlbumSearch(searchTerm);
+};
   return (
     <>
       <Toolbar
@@ -82,6 +87,15 @@ const EnhancedTableToolbar = ({
             {description}
           </Typography>
         )}
+{/* 
+<TextField
+          label="Search Album"
+          variant="outlined"
+          size="small"
+          value={albumSearch}
+          onChange={handleAlbumSearchChange}
+        /> */}
+
         {numSelected > 1 && actionButtons ? (
           <>
             <Tooltip title="Reject all selected">
